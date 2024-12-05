@@ -28,4 +28,4 @@ jobs:
           exit
           EOF
 
-          scp -r ./* ec2-user@.13.201.193.152:/var/www/html/
+          scp -r ./* ec2-user@13.201.193.152:/var/www/html/
