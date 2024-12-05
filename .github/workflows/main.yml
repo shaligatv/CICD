@@ -23,7 +23,7 @@ jobs:
       # Step 3: Deploy to EC2
       - name: Deploy to EC2
         run: |
-          ssh -v -o StrictHostKeyChecking=no ec2-user@<13.201.193.152<< EOF
+          ssh -v -o StrictHostKeyChecking=no ec2-user@13.201.193.152<< EOF
           sudo rm -rf /var/www/html/*
           exit
           EOF
