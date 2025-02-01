@@ -1,0 +1,63 @@
+pipeline {
+    agent any  // Executes the pipeline on any available agent
+
+    environment {
+        GITHUB_REPO_URL = 'https://github.com/shaligatv/CICD.git' // Replace with your GitHub repo URL
+        TARGET_DIR = '/var/www/html'  // NGINX root directory
+        GIT_BRANCH = 'main'  // Git branch to pull (default: 'main')
+    }
+
+    stages {
+        stage('Clone Git Repository') {
+            steps {
+                echo 'Cloning repository from GitHub...'
+                // Clone the GitHub repository into a temporary directory
+                sh "git clone -b ${GIT_BRANCH} ${GITHUB_REPO_URL} /tmp/nginx-site"
+            }
+        }
+
+        stage('Deploy Files to NGINX Directory') {
+            steps {
+                echo 'Deploying index.html to NGINX directory...'
+                // Copy the content from the cloned repository to the NGINX root directory
+                sh "cp -r /tmp/nginx-site/* ${TARGET_DIR}/"
+            }
+        }
+
+        stage('Restart NGINX') {
+            steps {
+                echo 'Restarting NGINX to reflect changes...'
+                // Restart NGINX to apply any changes (assuming 'sudo' permissions are correctly set)
+                sh ' echo "asd123." | sudo -S systemctl restart httpd'
+            }
+        }
+
+        stage('Clean Up') {
+            steps {
+                echo 'Cleaning up temporary files...'
+                // Optionally, remove the temporary clone directory
+                sh 'rm -rf /tmp/nginx-site'
+            }
+        }
+
+        stage('Check NGINX Status') {
+            steps {
+                echo 'Checking NGINX status...'
+                // Check NGINX status after the restart
+                sh 'echo "asd123." | sudo -S systemctl status httpd'
+            }
+        }
+    }
+
+    post {
+        always {
+            echo 'Pipeline execution completed.'
+        }
+        success {
+            echo 'NGINX site deployed successfully.'
+        }
+        failure {
+            echo 'There was an error deploying the NGINX site.'
+        }
+    }
+}
